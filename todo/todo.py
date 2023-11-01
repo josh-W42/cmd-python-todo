@@ -10,16 +10,24 @@ class Todo:
     def __int__(self):
         pass
 
+    @staticmethod
+    def __get_todos(filepath: str) -> List[str]:
+        with open(filepath, "r") as localeFile:
+            todos_local = localeFile.readlines()
+        return todos_local
+
     def add(self, items: Union[List[str], str]) -> None:
         """
         Adds a new todo list item to the todo list store.
         :param items: a list of todo items to add to todo store.
         :return: None
         """
-        if type(items) == str:
+        if type(items) is str:
             self.__todos.append(items)
-        elif type(items) == List:
-            self.__todos.append(*items)
+        elif type(items) is list:
+            self.__todos.extend(items)
+        else:
+            print("Incorrect input (Usage: add [todo], [todo] ")
 
     def show(self) -> None:
         """
