@@ -1,9 +1,9 @@
-from typing import List, Union
+from typing import List, Union, Tuple
 
 
 class Todo:
     """
-    Class todo allows you to set up a todo app.
+    Class todo allows you to set up a cmd line todo app.
     """
     __todos = []
     __STORAGE_FILE_PATH = "todos.txt"
@@ -55,6 +55,13 @@ class Todo:
         :param items: a list of todo items to add to todo store.
         :return: None
         """
+
+        """
+        Proposal - In addition to adding the todos to memory,
+        consider also making a write to the local file as well.
+        As it currently stands, we only write to the file when
+        a user uses to exit command.
+        """
         if type(items) is str:
             self.__todos.append(items)
         elif type(items) is list:
@@ -69,6 +76,29 @@ class Todo:
         """
         for i, todo in enumerate(self.__todos):
             print(f'{i + 1}. {todo}')
+
+    @staticmethod
+    def __parse_for_editing(user_input: str) -> Tuple[int, str]:
+        """
+        Parses user input to be used by the edit method.
+        Throws a ValueError if improperly formatted.
+        :param user_input: Input from the user.
+        """
+        formatted = [item.strip() for item in user_input[5:].split(',')]
+        if len(formatted) < 2:
+            raise ValueError
+        return int(formatted[0]) - 1, formatted[1]
+
+    def edit(self, i: int, revised_todo) -> None:
+        """
+        Replaces the todo  at the specified index in the todo memory store.
+        Throws a ValueError if index is out of range.
+        :param i: The index of the desired todo to edit.
+        :param revised_todo: A new todo.
+        """
+        if i < 0 or i >= len(self.__todos):
+            raise ValueError
+        self.__todos[i] = revised_todo
 
     def exit(self) -> None:
         """
@@ -89,11 +119,18 @@ class Todo:
             if user_input.rfind('add ', 0, 4) == 0:
                 todos = self.__parse_for_adding(user_input)
                 self.add(todos)
+            elif user_input.rfind('edit ', 0, 5) == 0:
+                try:
+                    i, todo = self.__parse_for_editing(user_input)
+                    self.edit(i, todo)
+                except ValueError:
+                    print("Invalid input please try again.")
+                    print("Usage:\nadd [todo], [todo]\nshow\nedit [number], [revised todo]\ncomplete [number]\nexit")
             elif user_input.startswith('show'):
                 self.show()
             elif user_input.startswith(self.__EXIT_CONDITION):
                 self.exit()
                 break
             else:
-                print("Usage:\nadd [todo], [todo]\nshow\nedit [number] [revised todo]\ncomplete [number]\nexit")
+                print("Usage:\nadd [todo], [todo]\nshow\nedit [number], [revised todo]\ncomplete [number]\nexit")
 
