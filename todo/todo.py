@@ -106,6 +106,25 @@ class Todo:
         """
         self.__store_todos(self.__STORAGE_FILE_PATH, self.__todos)
 
+    @staticmethod
+    def __parse_for_complete(user_input: str) -> int:
+        """
+        Parses user input into a index of a todo to complete.
+        :param user_input: User input.
+        :return: The parsed index.
+        """
+        return int(user_input[9:].strip()) - 1
+
+    def complete(self, i: int) -> None:
+        """
+        Removes a todo from the list at the given index
+        :param i: The index of the todo to remove.
+        """
+        if i < 0 or i > len(self.__todos):
+            raise ValueError
+        removed_todo = self.__todos.pop(i)
+        print(f"{removed_todo} Completed")
+
     def start(self) -> None:
         """
         Starts the todo list run loop.
@@ -123,6 +142,14 @@ class Todo:
                 try:
                     i, todo = self.__parse_for_editing(user_input)
                     self.edit(i, todo)
+                    self.__sync()
+                except ValueError:
+                    print("Invalid input please try again.")
+                    print("Usage:\nadd [todo], [todo]\nshow\nedit [number], [revised todo]\ncomplete [number]\nexit")
+            elif user_input.rfind('complete ', 0, 9) == 0:
+                try:
+                    i = self.__parse_for_complete(user_input)
+                    self.complete(i)
                     self.__sync()
                 except ValueError:
                     print("Invalid input please try again.")
