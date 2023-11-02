@@ -55,19 +55,12 @@ class Todo:
         :param items: a list of todo items to add to todo store.
         :return: None
         """
-
-        """
-        Proposal - In addition to adding the todos to memory,
-        consider also making a write to the local file as well.
-        As it currently stands, we only write to the file when
-        a user uses to exit command.
-        """
         if type(items) is str:
             self.__todos.append(items)
         elif type(items) is list:
             self.__todos.extend(items)
         else:
-            print("Incorrect input (Usage: add [todo], [todo] ")
+            print("Incorrect input (Usage: add [todo], [todo]")
 
     def show(self) -> None:
         """
@@ -91,7 +84,7 @@ class Todo:
 
     def edit(self, i: int, revised_todo) -> None:
         """
-        Replaces the todo  at the specified index in the todo memory store.
+        Replaces the todo at the specified index in the todo memory store.
         Throws a ValueError if index is out of range.
         :param i: The index of the desired todo to edit.
         :param revised_todo: A new todo.
@@ -104,6 +97,12 @@ class Todo:
         """
         Should be called when the program exits.
         Stores todos in file and cleans up.
+        """
+        self.__sync()
+
+    def __sync(self) -> None:
+        """
+        Syncs the todos in memory with the local file.
         """
         self.__store_todos(self.__STORAGE_FILE_PATH, self.__todos)
 
@@ -119,10 +118,12 @@ class Todo:
             if user_input.rfind('add ', 0, 4) == 0:
                 todos = self.__parse_for_adding(user_input)
                 self.add(todos)
+                self.__sync()
             elif user_input.rfind('edit ', 0, 5) == 0:
                 try:
                     i, todo = self.__parse_for_editing(user_input)
                     self.edit(i, todo)
+                    self.__sync()
                 except ValueError:
                     print("Invalid input please try again.")
                     print("Usage:\nadd [todo], [todo]\nshow\nedit [number], [revised todo]\ncomplete [number]\nexit")
